@@ -6,6 +6,7 @@ gradle/wrapper/*.jar
 gradle/wrapper/*.properties
 
 ### IntelliJ IDEA ###
+.idea/*
 .idea/*.xml
 .idea/.gitignore
 
