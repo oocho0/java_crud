@@ -1,4 +1,4 @@
-package my.oochoo.core;
+package my.oochoo.jdbc;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 

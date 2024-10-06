@@ -1,33 +1,43 @@
 package my.oochoo.jdbc;
 
-import my.oochoo.core.DataSourceUtil;
-
+import javax.sql.DataSource;
 import java.sql.*;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
-public class JdbcService {
-    private final Logger LOGGER = Logger.getLogger(JdbcService.class.getName());
+public class JdbcTemplate {
+    private final Logger LOGGER = Logger.getLogger(JdbcTemplate.class.getName());
+    private final DataSource dataSource;
 
-    public void executeQuery() {
+    public JdbcTemplate(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    /**
+     * 조회
+     * @param sql String : SQL
+     * @param rowMapper RowMapper<T> : ResultSet 사용
+     * @retur
+     * @param <T>
+     */
+    public <T> T selectQuery(String sql, RowMapper<T> rowMapper) {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
 
         try {
             // DataSourceUtil을 사용하여 Connection 얻기
-            connection = DataSourceUtil.getConnection();
+            connection = dataSource.getConnection();
 
             // Statement 생성 및 쿼리 실행
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT * FROM TEST_TABLE");
+            resultSet = statement.executeQuery(sql);
 
-            // 결과 처리
-            while (resultSet.next()) {
-                LOGGER.info("ID: " + resultSet.getInt("ID") + ", Name: " + resultSet.getString("NAME"));
-            }
+            return rowMapper.mapRow(resultSet);
 
         } catch (SQLException e) {
-            LOGGER.warning(e.getMessage());
+            throw new RuntimeException(e);
         } finally {
             // 리소스 반납 (역순으로 닫기)
             try {
