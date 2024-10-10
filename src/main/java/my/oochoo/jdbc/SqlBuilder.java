@@ -1,12 +1,19 @@
 package my.oochoo.jdbc;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SqlBuilder {
     private String select;
+    private String insert;
+    private String update;
     private String from;
+    private String values;
+    private String set;
     private String join;
+    private String duplicate;
     private String where;
     private String orderBy;
     private String limit;
@@ -31,6 +38,27 @@ public class SqlBuilder {
         return this;
     }
 
+    public SqlBuilder setInsert(String table) {
+        this.insert = String.format("INSERT INTO %s", table);
+        return this;
+    }
+    public SqlBuilder setInsert(String table, List<String> columns) {
+        this.insert = String.format("INSERT INTO %s (%s)", table, String.join(", ", columns));
+        return this;
+    }
+
+    public SqlBuilder setInsertValues(String table, Map<String, Object> values) {
+        Map<String, String> valuesMap = this.stringFormat(values);
+        this.insert = String.format("INSERT INTO %s (%s)", table, String.join(", ", valuesMap.keySet()));
+        this.values = String.format(" VALUES (%s)", String.join(", ", valuesMap.values()));
+        return this;
+    }
+
+    public SqlBuilder setUpdate(String table) {
+        this.update = String.format("UPDATE %s", table);
+        return this;
+    }
+
     public SqlBuilder setFrom(String table) {
         this.from = String.format(" FROM %s", table);
         return this;
@@ -39,6 +67,47 @@ public class SqlBuilder {
     public SqlBuilder setFrom(String table, String alias) {
         this.tableAlias = alias;
         this.from = String.format(" FROM %s %s", table, alias);
+        return this;
+    }
+
+    public SqlBuilder setValues(Object value) {
+        if (value instanceof String) {
+            value = "'" + value + "'";
+        }
+        if (this.values == null) {
+            this.values = String.format(" VALUES (%s)", value);
+        } else {
+            this.values = this.values.substring(0, this.values.length() - 1);
+            this.values += String.format(", %s)", value);
+        }
+        return this;
+    }
+
+    public SqlBuilder setValues(List<Object> values) {
+        List<String> valuesList = this.stringFormat(values);
+        this.values = String.format(" VALUES (%s)", String.join(", ", valuesList));
+        return this;
+    }
+
+    public SqlBuilder setSet(String column, Object value) {
+        if (value instanceof String) {
+            value = "'" + value + "'";
+        }
+        if (this.set == null) {
+            this.set = String.format(" SET %s = %s", column, value);
+        } else {
+            this.set += String.format(", %s = %s", column, value);
+        }
+        return this;
+    }
+
+    public SqlBuilder setSet(Map<String, Object> values) {
+        Map<String, String> valuesMap = this.stringFormat(values);
+        StringBuilder columnWithAlias = new StringBuilder();
+        for (Map.Entry<String, String> entry : valuesMap.entrySet()) {
+            columnWithAlias.append(String.format("%s = %s, ", entry.getKey(), entry.getValue()));
+        }
+        this.set = String.format(" SET %s", columnWithAlias.substring(0, columnWithAlias.length() - 2));
         return this;
     }
 
@@ -51,7 +120,32 @@ public class SqlBuilder {
         return this;
     }
 
-    public SqlBuilder setWhere(String tableAlias, String column, String operator, String value) {
+    public SqlBuilder setDuplicate(String column, Object value) {
+        if (value instanceof String) {
+            value = "'" + value + "'";
+        }
+        if (this.duplicate == null) {
+            this.duplicate = String.format(" ON DUPLICATE KEY UPDATE %s = %s", column, value);
+        } else {
+            this.duplicate += String.format(", %s = %s", column, value);
+        }
+        return this;
+    }
+
+    public SqlBuilder setDuplicate(Map<String, Object> values) {
+        Map<String, String> valuesMap = this.stringFormat(values);
+        StringBuilder columnWithAlias = new StringBuilder();
+        for (Map.Entry<String, String> entry : valuesMap.entrySet()) {
+            columnWithAlias.append(String.format("%s = %s, ", entry.getKey(), entry.getValue()));
+        }
+        this.duplicate = String.format(" ON DUPLICATE KEY UPDATE %s", columnWithAlias.substring(0, columnWithAlias.length() - 2));
+        return this;
+    }
+
+    public SqlBuilder setWhere(String tableAlias, String column, String operator, Object value) {
+        if (value instanceof String) {
+            value = "'" + value + "'";
+        }
         if (this.where == null) {
             this.where = String.format(" WHERE %s.%s %s %s", tableAlias,column, operator, value);
         } else {
@@ -59,7 +153,10 @@ public class SqlBuilder {
         }
         return this;
     }
-    public SqlBuilder setWhere(String column, String operator, String value) {
+    public SqlBuilder setWhere(String column, String operator, Object value) {
+        if (value instanceof String) {
+            value = "'" + value + "'";
+        }
         if (this.where == null) {
             this.where = String.format(" WHERE %s %s %s",column, operator, value);
         } else {
@@ -67,35 +164,21 @@ public class SqlBuilder {
         }
         return this;
     }
-    public SqlBuilder setWhere(String tableAlias, String column, String operator, int value) {
+    public SqlBuilder setWhere(String tableAlias, String column, String operator, List<Object> values) {
+        List<String> valuesList = this.stringFormat(values);
         if (this.where == null) {
-            this.where = String.format(" WHERE %s.%s %s %d", tableAlias, column, operator, value);
+            this.where = String.format(" WHERE %s.%s %s (%s)", tableAlias, column, operator, String.join(", ", valuesList));
         } else {
-            this.where += String.format(" AND %s.%s %s %d", tableAlias, column, operator, value);
+            this.where += String.format(" AND %s.%s %s (%s)", tableAlias, column, operator, String.join(", ", valuesList));
         }
         return this;
     }
-    public SqlBuilder setWhere(String column, String operator, int value) {
+    public SqlBuilder setWhere(String column, String operator, List<Object> values) {
+        List<String> valuesList = this.stringFormat(values);
         if (this.where == null) {
-            this.where = String.format(" WHERE %s %s %d", column, operator, value);
+            this.where = String.format(" WHERE %s %s (%s)", column, operator, String.join(", ", valuesList));
         } else {
-            this.where += String.format(" AND %s %s %d", column, operator, value);
-        }
-        return this;
-    }
-    public SqlBuilder setWhere(String tableAlias, String column, String operator, List<String> values) {
-        if (this.where == null) {
-            this.where = String.format(" WHERE %s.%s %s (%s)", tableAlias, column, operator, String.join(", ", values));
-        } else {
-            this.where += String.format(" AND %s.%s %s (%s)", tableAlias, column, operator, String.join(", ", values));
-        }
-        return this;
-    }
-    public SqlBuilder setWhere(String column, String operator, List<String> values) {
-        if (this.where == null) {
-            this.where = String.format(" WHERE %s %s (%s)", column, operator, String.join(", ", values));
-        } else {
-            this.where += String.format(" AND %s %s (%s)", column, operator, String.join(", ", values));
+            this.where += String.format(" AND %s %s (%s)", column, operator, String.join(", ", valuesList));
         }
         return this;
     }
@@ -150,6 +233,40 @@ public class SqlBuilder {
     }
 
     public String build() {
-        return select + from + join + where + orderBy + limit;
+        if(this.select != null) {
+            return select + from + join + where + orderBy + limit;
+        }
+        if(this.insert != null) {
+            return insert + values + duplicate;
+        }
+        if(this.update != null) {
+            return update + set + where;
+        }
+        return null;
+    }
+
+    private Map<String, String> stringFormat(Map<String, Object> values) {
+        Map<String, String> valuesMap = new HashMap<>();
+        for (Map.Entry<String, Object> entry : values.entrySet()) {
+            if (entry.getValue() instanceof String) {
+                String value = "'" + entry.getValue() + "'";
+                valuesMap.put(entry.getKey(), value);
+            } else {
+                valuesMap.put(entry.getKey(), String.valueOf(entry.getValue()));
+            }
+        }
+        return valuesMap;
+    }
+
+    private List<String> stringFormat(List<Object> values) {
+        List<String> valuesList = new ArrayList<>();
+        for (Object value : values) {
+            if (value instanceof String) {
+                String valueStr = "'" + value + "'";
+                valuesList.add(valueStr);
+            }
+            valuesList.add(String.valueOf(value));
+        }
+        return valuesList;
     }
 }

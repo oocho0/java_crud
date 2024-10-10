@@ -1,10 +1,8 @@
 package my.oochoo.web.model;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 게시글 도메인
@@ -98,5 +96,29 @@ public class Post {
         this.useYN = useYN;
     }
 
-
+    public Map<String, Object> toMap() {
+        Map<String, Object> postMap = new HashMap<>();
+        if (this.title != null) {
+            postMap.put("title", this.title);
+        }
+        if (this.content != null) {
+            postMap.put("content", this.content);
+        }
+        if (this.author != null) {
+            postMap.put("author", this.author);
+        }
+        if (this.password != null) {
+            postMap.put("password", this.password);
+        }
+        if (this.regDate != null) {
+            postMap.put("regDate", this.regDate);
+        }
+        if (this.modDate != null) {
+            postMap.put("modDate", this.modDate);
+        }
+        if (this.useYN != null) {
+            postMap.put("useYN", this.useYN);
+        }
+        return postMap;
+    }
 }

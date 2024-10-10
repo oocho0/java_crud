@@ -2,8 +2,6 @@ package my.oochoo.jdbc;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 public class JdbcTemplate {
@@ -33,7 +31,7 @@ public class JdbcTemplate {
             // Statement 생성 및 쿼리 실행
             statement = connection.createStatement();
             resultSet = statement.executeQuery(sql);
-
+            LOGGER.info(sql);
             return rowMapper.mapRow(resultSet);
 
         } catch (SQLException e) {
@@ -45,6 +43,28 @@ public class JdbcTemplate {
                 if (statement != null) statement.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
+                LOGGER.warning(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public int updateQuery(String sql) {
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.createStatement();
+            LOGGER.info(sql);
+            return statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                LOGGER.warning(e.getMessage());
                 e.printStackTrace();
             }
         }
