@@ -22,3 +22,13 @@ CREATE TABLE reply (
     replyLevel INT(11) NOT NULL,
     PRIMARY KEY (replyId)
 );
+
+CREATE TABLE user {
+    userKey INT(11) NOT NULL AUTO_INCREMENT,
+    userId VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    userName VARCHAR(255) NOT NULL,
+    reg_date DATETIME NOT NULL,
+    mod_date DATETIME NOT NULL,
+    PRIMARY KEY (userKey)
+}
