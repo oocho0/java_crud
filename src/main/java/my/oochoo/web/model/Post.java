@@ -11,17 +11,14 @@ public class Post {
     /** 게시글 일련번호 */
     private int postId;
 
+    /** 게시글 등록자 */
+    private int userKey;
+
     /** 게시글 제목 */
     private String title;
 
     /** 게시글 내용 */
     private String content;
-
-    /** 게시글 작성자 */
-    private String author;
-
-    /** 게시글 작성자의 비밀번호 */
-    private String password;
 
     /** 게시글 최초 작성 일자 */
     private Date regDate;
@@ -40,6 +37,14 @@ public class Post {
         this.postId = postId;
     }
 
+    public int getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(int userKey) {
+        this.userKey = userKey;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -54,22 +59,6 @@ public class Post {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public Date getRegDate() {
@@ -92,6 +81,10 @@ public class Post {
         return useYN;
     }
 
+    public String getUseYN() {
+        return useYN;
+    }
+
     public void setUseYN(String useYN) {
         this.useYN = useYN;
     }
@@ -101,14 +94,11 @@ public class Post {
         if (this.title != null) {
             postMap.put("title", this.title);
         }
+        if (this.userKey != 0) {
+            postMap.put("userKey", this.userKey);
+        }
         if (this.content != null) {
             postMap.put("content", this.content);
-        }
-        if (this.author != null) {
-            postMap.put("author", this.author);
-        }
-        if (this.password != null) {
-            postMap.put("password", this.password);
         }
         if (this.regDate != null) {
             postMap.put("regDate", this.regDate);

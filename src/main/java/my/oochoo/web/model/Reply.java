@@ -1,6 +1,8 @@
 package my.oochoo.web.model;
 
 import java.sql.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 댓글 도메인
@@ -9,14 +11,11 @@ public class Reply {
     /** 댓글 일련번호 */
     private int replyId;
 
+    /** 댓글 등록자 */
+    private int userKey;
+
     /** 댓글이 달린 참조된 게시글/댓글의 일련번호 */
     private int referId;
-
-    /** 댓글 작성자 */
-    private String author;
-
-    /** 댓글 작성자의 비밀번호 */
-    private String password;
 
     /** 댓글 내용 */
     private String content;
@@ -44,28 +43,20 @@ public class Reply {
         this.replyId = replyId;
     }
 
+    public int getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(int userKey) {
+        this.userKey = userKey;
+    }
+
     public int getReferId() {
         return referId;
     }
 
     public void setReferId(int referId) {
         this.referId = referId;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getContent() {
@@ -106,5 +97,28 @@ public class Reply {
 
     public void setReplyLevel(int replyLevel) {
         this.replyLevel = replyLevel;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> replyMap = new HashMap<>();
+        if (this.referId != 0) {
+            replyMap.put("referId", this.referId);
+        }
+        if (this.userKey != 0) {
+            replyMap.put("userKey", this.userKey);
+        }
+        if (this.content != null) {
+            replyMap.put("content", this.content);
+        }
+        if (this.regDate != null) {
+            replyMap.put("regDate", this.regDate);
+        }
+        if (this.modDate != null) {
+            replyMap.put("modDate", this.modDate);
+        }
+        if (this.useYN != null) {
+            replyMap.put("useYN", this.useYN);
+        }
+        return replyMap;
     }
 }
