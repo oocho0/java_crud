@@ -2,6 +2,7 @@ package my.oochoo.web.service;
 
 import my.oochoo.jdbc.JdbcTemplate;
 import my.oochoo.jdbc.SqlBuilder;
+import my.oochoo.web.model.Page;
 import my.oochoo.web.model.Post;
 import my.oochoo.web.repository.PostRepository;
 
@@ -17,6 +18,17 @@ public class PostServiceJdbcImpl implements PostService {
     private final PostRepository postRepository;
     public PostServiceJdbcImpl(PostRepository postRepository) {
         this.postRepository = postRepository;
+    }
+
+    /**
+     * 모든 게시글 조회
+     * @param params Map<String, String> : queryString
+     * @return List<Post> 조회된 모든 게시글 리스트
+     */
+    public List<Post> getAllPostList(Map<String, String> params, Page page) {
+        page.setCurrentPageNumber(Integer.parseInt(params.getOrDefault("curPage", "1")));
+        page.setPageSize(Integer.parseInt(params.getOrDefault("pageSize", "10")));
+        return postRepository.getAllPostList(page).orElseThrow(() -> new IllegalArgumentException("조회된 게시글이 없습니다."));
     }
 
     /**
