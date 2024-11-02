@@ -1,7 +1,7 @@
 package my.oochoo.web.Const;
 
 public class Path {
-    public static final String TEMPLATE = "jsp/index.jsp";
+    public static final String TEMPLATE = "webapp/views/index.jsp";
     public static final String HOME = "/";
     public static final String POST = "/post";
     public static final String REPLY = "/reply";
