@@ -1,14 +1,9 @@
 package my.oochoo.web.service;
 
-import my.oochoo.jdbc.JdbcTemplate;
-import my.oochoo.jdbc.SqlBuilder;
 import my.oochoo.web.model.Page;
 import my.oochoo.web.model.Post;
 import my.oochoo.web.repository.PostRepository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
