@@ -14,8 +14,8 @@
     <script src="/js/${js}"></script>
 </head>
 <body>
-    <jsp:include page="/jsp/template/header.jsp"></jsp:include>
-    <jsp:include page="/jsp/${jsp}"></jsp:include>
-    <jsp:include page="/jsp/template/footer.jsp"></jsp:include>
+    <jsp:include page="/views/template/header.jsp"></jsp:include>
+    <jsp:include page="/views/${jsp}"></jsp:include>
+    <jsp:include page="/views/template/footer.jsp"></jsp:include>
 </body>
 </html>
